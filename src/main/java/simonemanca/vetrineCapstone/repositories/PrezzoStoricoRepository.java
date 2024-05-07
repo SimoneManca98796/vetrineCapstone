@@ -13,7 +13,7 @@ public interface PrezzoStoricoRepository extends JpaRepository<PrezzoStorico, Lo
     // Utilizza la convenzione di denominazione per definire la query
     Page<PrezzoStorico> findByDataAndLuogo(Date data, String luogo, Pageable pageable);
 
-    // Per query più complesse, utilizza l'annotazione @Query
+    // Per query più complesse, utilizzerò l'annotazione @Query
     @Query("SELECT p FROM PrezzoStorico p WHERE (:data IS NULL OR p.data = :data) AND (:luogo IS NULL OR p.luogo = :luogo OR :luogo = '')")
     List<PrezzoStorico> findByDataAndLuogo(Date data, String luogo);
 }

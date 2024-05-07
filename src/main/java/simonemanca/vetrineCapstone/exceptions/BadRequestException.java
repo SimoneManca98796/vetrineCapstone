@@ -1,7 +1,7 @@
 package simonemanca.vetrineCapstone.exceptions;
 
-import java.util.List;
 import org.springframework.validation.ObjectError;
+import java.util.List;
 
 public class BadRequestException extends RuntimeException {
     private List<ObjectError> errorsList;
@@ -10,8 +10,8 @@ public class BadRequestException extends RuntimeException {
         super(message);
     }
 
-    public BadRequestException(List<ObjectError> errorsList) {
-        super("Ci sono stati errori di validazione nel payload.");
+    public BadRequestException(String message, List<ObjectError> errorsList) {
+        super(message);
         this.errorsList = errorsList;
     }
 
@@ -19,3 +19,4 @@ public class BadRequestException extends RuntimeException {
         return errorsList;
     }
 }
+

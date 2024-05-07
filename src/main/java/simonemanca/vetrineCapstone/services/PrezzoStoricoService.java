@@ -22,7 +22,7 @@ public class PrezzoStoricoService {
 
     private static final Logger logger = LoggerFactory.getLogger(PrezzoStoricoService.class);
 
-    // Ottieni tutti i prezzi storici con paginazione
+    // Tutti i prezzi storici con paginazione
     public Page<PrezzoStorico> getAllPrezzi(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -43,7 +43,7 @@ public class PrezzoStoricoService {
         }
     }
 
-    // Ottieni un singolo prezzo storico per ID
+    // Singolo prezzo storico per ID
     public Optional<PrezzoStorico> getPrezzoById(Long id) {
         return repository.findById(id);
     }
