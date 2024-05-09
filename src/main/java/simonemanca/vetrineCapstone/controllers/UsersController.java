@@ -5,12 +5,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import simonemanca.vetrineCapstone.entities.User;
+import simonemanca.vetrineCapstone.services.FileStorageService;
 import simonemanca.vetrineCapstone.services.UserService;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -19,6 +24,9 @@ public class UsersController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -62,5 +70,24 @@ public class UsersController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUserById(@PathVariable UUID userId) {
         userService.delete(userId);
+    }
+
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<?> uploadAvatar(@AuthenticationPrincipal User currentUser, @RequestParam("file") MultipartFile file) {
+        try {
+            String fileName = fileStorageService.storeFile(file); // Questo metodo dovrebbe gestire l'effettivo salvataggio del file
+
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/path/to/file/")
+                    .path(fileName)
+                    .toUriString();
+
+            currentUser.setAvatarURL(fileDownloadUri);
+            userService.update(currentUser);
+
+            return ResponseEntity.ok().body(Map.of("fileName", fileName, "uri", fileDownloadUri, "type", file.getContentType(), "size", file.getSize()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not upload the file: " + ex.getMessage());
+        }
     }
 }

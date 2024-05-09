@@ -8,6 +8,8 @@ import simonemanca.vetrineCapstone.exceptions.UnauthorizedException;
 import simonemanca.vetrineCapstone.repositories.UserRepository;
 import simonemanca.vetrineCapstone.security.JWTTools;
 
+import java.util.Optional;
+
 @Service
 public class AuthService {
 
@@ -22,8 +24,12 @@ public class AuthService {
 
     public User authenticate(String email, String password) {
         System.out.println("Tentativo di login per l'email: " + email);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UnauthorizedException("Utente non trovato."));
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            System.out.println("Utente non trovato per l'email: " + email);
+            throw new UnauthorizedException("Utente non trovato.");
+        }
+        User user = userOpt.get();
         if (!passwordEncoder.matches(password, user.getPassword())) {
             System.out.println("Tentativo di login fallito per l'email: " + email);
             throw new UnauthorizedException("Password errata.");

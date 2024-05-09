@@ -22,4 +22,3 @@ public interface PrezzoStoricoRepository extends JpaRepository<PrezzoStorico, Lo
 
 
 
-
