@@ -8,21 +8,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import simonemanca.vetrineCapstone.entities.PrezziOvini;
+import simonemanca.vetrineCapstone.entities.PrezziSuini;
 import simonemanca.vetrineCapstone.entities.PrezzoStorico;
-import simonemanca.vetrineCapstone.services.PrezziOviniService;
+import simonemanca.vetrineCapstone.services.PrezziSuiniService;
 import simonemanca.vetrineCapstone.services.PrezzoStoricoService;
 
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/prezziOvini")
-public class PrezziOviniController {
+@RequestMapping("/api/prezziSuini")
+public class PrezziSuiniController {
 
     @Autowired
-    private PrezziOviniService prezziOviniService;
+    private PrezziSuiniService prezziSuiniService;
 
-    // Ottieni tutti i prezzi storici con paginazione e gestione eccezioni
+
     @GetMapping
     public ResponseEntity<?> getAllPrezzi(
             @RequestParam(defaultValue = "0") int page,
@@ -35,7 +35,7 @@ public class PrezziOviniController {
 
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
-            Page<PrezziOvini> prezzi = prezziOviniService.findByDataAndLuogo(data, luogo, pageable);
+            Page<PrezziSuini> prezzi = prezziSuiniService.findByDataAndLuogo(data, luogo, pageable);
             return ResponseEntity.ok(prezzi);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nel server: " + e.getMessage());
@@ -46,7 +46,7 @@ public class PrezziOviniController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getPrezzoById(@PathVariable Long id) {
         try {
-            Optional<PrezziOvini> prezzoOptional = prezziOviniService.getPrezzoById(id);
+            Optional<PrezziSuini> prezzoOptional = prezziSuiniService.getPrezzoById(id);
             return prezzoOptional.map(prezzo -> ResponseEntity.ok(prezzo))
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception e) {
@@ -56,9 +56,9 @@ public class PrezziOviniController {
 
     // Crea un nuovo record di prezzo storico con gestione eccezioni
     @PostMapping
-    public ResponseEntity<?> createPrezzo(@RequestBody PrezziOvini prezzo) {
+    public ResponseEntity<?> createPrezzo(@RequestBody PrezziSuini prezzo) {
         try {
-            PrezziOvini savedPrezzo = prezziOviniService.savePrezzo(prezzo);
+            PrezziSuini savedPrezzo = prezziSuiniService.savePrezzo(prezzo);
             return new ResponseEntity<>(savedPrezzo, HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nella creazione del prezzo: " + e.getMessage());
@@ -67,9 +67,9 @@ public class PrezziOviniController {
 
     // Aggiorna un record di prezzo storico esistente con gestione eccezioni
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePrezzo(@PathVariable Long id, @RequestBody PrezziOvini prezzo) {
+    public ResponseEntity<?> updatePrezzo(@PathVariable Long id, @RequestBody PrezziSuini prezzo) {
         try {
-            PrezziOvini updatedPrezzo = prezziOviniService.updatePrezzo(id, prezzo);
+            PrezziSuini updatedPrezzo = prezziSuiniService.updatePrezzo(id, prezzo);
             return updatedPrezzo != null ? ResponseEntity.ok(updatedPrezzo) : ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nell'aggiornamento del prezzo: " + e.getMessage());
@@ -80,7 +80,7 @@ public class PrezziOviniController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePrezzo(@PathVariable Long id) {
         try {
-            prezziOviniService.deletePrezzo(id);
+            prezziSuiniService.deletePrezzo(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nell'eliminazione del prezzo: " + e.getMessage());
