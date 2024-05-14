@@ -44,10 +44,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public ProductDTO createProduct(String name, String description, double price, String categoryName, MultipartFile file) {
-        // Salva l'immagine e ottiene l'URL
-        String imageUrl = saveImage(file);
-
+    public ProductDTO createProduct(String name, String description, double price, String categoryName, String imageUrl) {
         // Trova la categoria
         Category category = categoryRepository.findByName(categoryName)
                 .orElseThrow(() -> new RuntimeException("Categoria non trovata"));
@@ -69,7 +66,7 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    private String saveImage(MultipartFile file) {
+    public String uploadFile(MultipartFile file, String name) {
         try {
             String fileName = file.getOriginalFilename();
             Path path = Paths.get("uploads/" + fileName);

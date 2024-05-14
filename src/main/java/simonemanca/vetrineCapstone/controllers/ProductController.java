@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import simonemanca.vetrineCapstone.entities.ProductDTO;
 import simonemanca.vetrineCapstone.services.ProductService;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -39,9 +40,9 @@ public class ProductController {
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("price") double price,
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam("imageUrl") String imageUrl) {
 
-        ProductDTO createdProduct = productService.createProduct(name, description, price, categoryName, file);
+        ProductDTO createdProduct = productService.createProduct(name, description, price, categoryName, imageUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
@@ -60,7 +61,8 @@ public class ProductController {
 
         System.out.println("File: " + file.getOriginalFilename());
         System.out.println("Name: " + name);
-        return ResponseEntity.ok("File caricato con successo");
+        String imageUrl = productService.uploadFile(file, name);
+        return ResponseEntity.ok(Collections.singletonMap("imageUrl", imageUrl));
     }
 
     @PostMapping
