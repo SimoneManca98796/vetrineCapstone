@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import simonemanca.vetrineCapstone.entities.Product;
 import simonemanca.vetrineCapstone.entities.ProductDTO;
 import simonemanca.vetrineCapstone.services.ProductService;
 
@@ -63,6 +62,7 @@ public class ProductController {
         System.out.println("Name: " + name);
         return ResponseEntity.ok("File caricato con successo");
     }
+
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody ProductDTO productDTO) {
         System.out.println("Creating product: " + productDTO.getName());
@@ -71,6 +71,8 @@ public class ProductController {
         return ResponseEntity.ok(savedProduct);
     }
 }
+
+
 
 
 
