@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import simonemanca.vetrineCapstone.entities.Product;
 import simonemanca.vetrineCapstone.entities.ProductDTO;
 import simonemanca.vetrineCapstone.services.ProductService;
 
@@ -49,6 +50,25 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadProduct(@RequestParam("file") MultipartFile file, @RequestParam("name") String name) {
+        if (file == null || name == null) {
+            System.out.println("Uno o più parametri non sono stati inviati correttamente.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File e nome sono obbligatori.");
+        }
+
+        System.out.println("File: " + file.getOriginalFilename());
+        System.out.println("Name: " + name);
+        return ResponseEntity.ok("File caricato con successo");
+    }
+    @PostMapping
+    public ResponseEntity<?> createProduct(@RequestBody ProductDTO productDTO) {
+        System.out.println("Creating product: " + productDTO.getName());
+
+        ProductDTO savedProduct = productService.saveProduct(productDTO);
+        return ResponseEntity.ok(savedProduct);
     }
 }
 

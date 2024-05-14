@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Service
 public class ProductService {
 
@@ -45,7 +44,7 @@ public class ProductService {
     }
 
     public ProductDTO createProduct(String name, String description, double price, String categoryName, MultipartFile file) {
-        // Logica per salvare l'immagine e ottenere l'URL
+        // Salva l'immagine e ottiene l'URL
         String imageUrl = saveImage(file);
 
         // Trova la categoria
@@ -90,6 +89,24 @@ public class ProductService {
                 product.getCategory().getId(),
                 product.getCategory().getName()
         );
+    }
+
+    public ProductDTO saveProduct(ProductDTO productDTO) {
+        // Trova la categoria
+        Category category = categoryRepository.findByName(productDTO.getCategoryName())
+                .orElseThrow(() -> new RuntimeException("Categoria non trovata"));
+
+        // Crea e salva il prodotto
+        Product product = new Product();
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setImageUrl(productDTO.getImageUrl()); // Usa l'URL dell'immagine dal DTO
+        product.setCategory(category);
+
+        product = productRepository.save(product);
+
+        return convertToDTO(product);
     }
 }
 
