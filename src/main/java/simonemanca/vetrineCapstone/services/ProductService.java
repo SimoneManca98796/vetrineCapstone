@@ -45,11 +45,9 @@ public class ProductService {
     }
 
     public ProductDTO createProduct(String name, String description, double price, String categoryName, String imageUrl) {
-        // Trova la categoria
         Category category = categoryRepository.findByName(categoryName)
                 .orElseThrow(() -> new RuntimeException("Categoria non trovata"));
 
-        // Crea e salva il prodotto
         Product product = new Product();
         product.setName(name);
         product.setDescription(description);
@@ -58,7 +56,21 @@ public class ProductService {
         product.setCategory(category);
 
         product = productRepository.save(product);
+        return convertToDTO(product);
+    }
 
+    public ProductDTO saveProduct(ProductDTO productDTO) {
+        Category category = categoryRepository.findByName(productDTO.getCategoryName())
+                .orElseThrow(() -> new RuntimeException("Categoria non trovata"));
+
+        Product product = new Product();
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setImageUrl(productDTO.getImageUrl());
+        product.setCategory(category);
+
+        product = productRepository.save(product);
         return convertToDTO(product);
     }
 
@@ -89,24 +101,8 @@ public class ProductService {
         );
     }
 
-    public ProductDTO saveProduct(ProductDTO productDTO) {
-        // Trova la categoria
-        Category category = categoryRepository.findByName(productDTO.getCategoryName())
-                .orElseThrow(() -> new RuntimeException("Categoria non trovata"));
-
-        // Crea e salva il prodotto
-        Product product = new Product();
-        product.setName(productDTO.getName());
-        product.setDescription(productDTO.getDescription());
-        product.setPrice(productDTO.getPrice());
-        product.setImageUrl(productDTO.getImageUrl()); // Usa l'URL dell'immagine dal DTO
-        product.setCategory(category);
-
-        product = productRepository.save(product);
-
-        return convertToDTO(product);
-    }
 }
+
 
 
 
