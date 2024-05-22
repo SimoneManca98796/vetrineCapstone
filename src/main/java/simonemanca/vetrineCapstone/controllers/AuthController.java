@@ -13,6 +13,7 @@ import simonemanca.vetrineCapstone.exceptions.UnauthorizedException;
 import simonemanca.vetrineCapstone.payloads.NewUserDTO;
 import simonemanca.vetrineCapstone.services.AuthService;
 import simonemanca.vetrineCapstone.services.UserService;
+import simonemanca.vetrineCapstone.services.EmailService;
 import simonemanca.vetrineCapstone.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,9 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public User registerUser(@RequestBody @Validated NewUserDTO newUserDTO, BindingResult result) {
@@ -47,7 +51,12 @@ public class AuthController {
         newUser.setEmail(newUserDTO.email());
         newUser.setPassword(passwordEncoder.encode(newUserDTO.password()));
         newUser.setRole(Role.USER);
-        return userService.save(newUser);
+        User savedUser = userService.save(newUser);
+
+        // Invio email di conferma
+        emailService.sendRegistrationEmail(savedUser);
+
+        return savedUser;
     }
 
     @PostMapping("/login")
@@ -74,7 +83,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Internal Server Error: " + ex.getMessage()));
         }
     }
-
 }
+
 
 
