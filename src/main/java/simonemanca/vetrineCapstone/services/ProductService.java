@@ -44,6 +44,13 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductDTO> searchProducts(String query) {
+        return productRepository.findByNameContainingIgnoreCase(query).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+
     public ProductDTO createProduct(String name, String description, double price, String categoryName, String imageUrl) {
         Category category = categoryRepository.findByName(categoryName)
                 .orElseThrow(() -> new RuntimeException("Categoria non trovata"));

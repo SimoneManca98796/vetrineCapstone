@@ -74,6 +74,13 @@ public class AuthController {
                 responseMap.put("avatarUrl", user.getAvatarURL());
             }
 
+            // Includi i dettagli dell'utente nella risposta
+            Map<String, String> userDetails = new HashMap<>();
+            userDetails.put("name", user.getName());
+            userDetails.put("surname", user.getSurname());
+            userDetails.put("email", user.getEmail());
+            responseMap.put("user", userDetails);
+
             return ResponseEntity.ok().body(responseMap);
         } catch (UnauthorizedException ex) {
             logger.error("Login non autorizzato: " + ex.getMessage(), ex);

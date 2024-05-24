@@ -37,6 +37,13 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam("query") String query) {
+        List<ProductDTO> products = productService.searchProducts(query);
+        return ResponseEntity.ok(products);
+    }
+
+
     @PostMapping("/categoryName/{categoryName}")
     public ResponseEntity<ProductDTO> createProduct(
             @PathVariable String categoryName,
