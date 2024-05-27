@@ -43,6 +43,11 @@ public class PrezzoStoricoService {
         }
     }
 
+    // Metodo per filtrare per luogo con paginazione
+    public Page<PrezzoStorico> findByLuogo(String luogo, Pageable pageable) {
+        return repository.findByLuogo(luogo, pageable);
+    }
+
     // Singolo prezzo storico per ID
     public Optional<PrezzoStorico> getPrezzoById(Long id) {
         return repository.findById(id);
@@ -72,6 +77,7 @@ public class PrezzoStoricoService {
         repository.deleteById(id);
     }
 }
+
 
 
 

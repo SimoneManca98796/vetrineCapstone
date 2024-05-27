@@ -33,7 +33,16 @@ public class PrezziController {
 
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
-            Page<PrezzoStorico> prezzi = prezzoStoricoService.findByDataAndLuogo(data, luogo, pageable);
+            Page<PrezzoStorico> prezzi;
+
+            if (data != null && !data.isEmpty()) {
+                prezzi = prezzoStoricoService.findByDataAndLuogo(data, luogo, pageable);
+            } else if (luogo != null && !luogo.isEmpty()) {
+                prezzi = prezzoStoricoService.findByLuogo(luogo, pageable);
+            } else {
+                prezzi = prezzoStoricoService.getAllPrezzi(pageable);
+            }
+
             return ResponseEntity.ok(prezzi);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nel server: " + e.getMessage());

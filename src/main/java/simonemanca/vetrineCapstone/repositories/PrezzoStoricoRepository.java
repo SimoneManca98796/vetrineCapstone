@@ -16,6 +16,10 @@ public interface PrezzoStoricoRepository extends JpaRepository<PrezzoStorico, Lo
     // Per query più complesse, utilizzerò l'annotazione @Query
     @Query("SELECT p FROM PrezzoStorico p WHERE (:data IS NULL OR p.data = :data) AND (:luogo IS NULL OR p.luogo = :luogo OR :luogo = '')")
     List<PrezzoStorico> findByDataAndLuogo(Date data, String luogo);
+
+    // Aggiungi il metodo per filtrare per luogo con paginazione
+    @Query("SELECT p FROM PrezzoStorico p WHERE (:luogo IS NULL OR p.luogo = :luogo OR :luogo = '')")
+    Page<PrezzoStorico> findByLuogo(String luogo, Pageable pageable);
 }
 
 
