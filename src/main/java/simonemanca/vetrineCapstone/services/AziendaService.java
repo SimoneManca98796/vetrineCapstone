@@ -6,6 +6,7 @@ import simonemanca.vetrineCapstone.entities.Azienda;
 import simonemanca.vetrineCapstone.repositories.AziendaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AziendaService {
@@ -29,6 +30,7 @@ public class AziendaService {
         aziendaRepository.deleteById(id);
     }
 }
+
 
 
 

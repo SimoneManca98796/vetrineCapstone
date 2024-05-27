@@ -75,7 +75,8 @@ public class AuthController {
             }
 
             // Includi i dettagli dell'utente nella risposta
-            Map<String, String> userDetails = new HashMap<>();
+            Map<String, Object> userDetails = new HashMap<>();
+            userDetails.put("id", user.getId()); // Aggiungi l'ID utente
             userDetails.put("name", user.getName());
             userDetails.put("surname", user.getSurname());
             userDetails.put("email", user.getEmail());
@@ -91,6 +92,7 @@ public class AuthController {
         }
     }
 }
+
 
 
 
