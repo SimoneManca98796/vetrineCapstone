@@ -10,11 +10,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import simonemanca.vetrineCapstone.entities.User;
-import simonemanca.vetrineCapstone.services.FileStorageService;
+import simonemanca.vetrineCapstone.services.CloudinaryService;
 import simonemanca.vetrineCapstone.services.UserService;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,24 +23,19 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 @RestController
 @RequestMapping("/api/users")
 public class UsersController {
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
-
     @Autowired
     private UserService userService;
 
     @Autowired
-    private FileStorageService fileStorageService;
+    private CloudinaryService cloudinaryService;
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -95,19 +90,15 @@ public class UsersController {
             }
 
             logger.info("Uploading file: {}", file.getOriginalFilename());
-            String filePath = fileStorageService.storeFile(file);
-            logger.info("File stored at path: {}", filePath);
-            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/uploads/")
-                    .path(filePath)
-                    .toUriString();
+            Map uploadResult = cloudinaryService.uploadFile(file);
 
+            String fileDownloadUri = uploadResult.get("url").toString();
             currentUser.setAvatarURL(fileDownloadUri);
             userService.update(currentUser);
+
             logger.info("File uploaded successfully: {}", fileDownloadUri);
-            logger.info("File uploaded and user updated successfully: {}", fileDownloadUri);
-            return ResponseEntity.ok().body(Map.of("fileName", filePath, "uri", fileDownloadUri, "type", file.getContentType(), "size", file.getSize()));
-        } catch (Exception ex) {
+            return ResponseEntity.ok().body(Map.of("fileName", file.getOriginalFilename(), "uri", fileDownloadUri, "type", file.getContentType(), "size", file.getSize()));
+        } catch (IOException ex) {
             logger.error("Could not upload the file: {}", ex.getMessage(), ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not upload the file: " + ex.getMessage());
         }
@@ -134,5 +125,6 @@ public class UsersController {
     }
 
 }
+
 
 

@@ -1,6 +1,9 @@
 package simonemanca.vetrineCapstone.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import simonemanca.vetrineCapstone.entities.Category;
@@ -10,11 +13,8 @@ import simonemanca.vetrineCapstone.repositories.CategoryRepository;
 import simonemanca.vetrineCapstone.repositories.ProductRepository;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +25,19 @@ public class ProductService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    private final Cloudinary cloudinary;
+
+    @Autowired
+    public ProductService(
+            @Value("${cloudinary.name}") String cloudName,
+            @Value("${cloudinary.key}") String apiKey,
+            @Value("${cloudinary.secret}") String apiSecret) {
+        this.cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", cloudName,
+                "api_key", apiKey,
+                "api_secret", apiSecret));
+    }
 
     public List<ProductDTO> getAllProducts() {
         return productRepository.findAll().stream()
@@ -49,7 +62,6 @@ public class ProductService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-
 
     public ProductDTO createProduct(String name, String description, double price, String categoryName, String imageUrl) {
         Category category = categoryRepository.findByName(categoryName)
@@ -87,10 +99,8 @@ public class ProductService {
 
     public String uploadFile(MultipartFile file, String name) {
         try {
-            String fileName = file.getOriginalFilename();
-            Path path = Paths.get("uploads/" + fileName);
-            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            return "http://localhost:8080/uploads/" + fileName;
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("public_id", name));
+            return uploadResult.get("url").toString();
         } catch (IOException e) {
             throw new RuntimeException("Errore durante il salvataggio dell'immagine", e);
         }
@@ -107,8 +117,9 @@ public class ProductService {
                 product.getCategory().getName()
         );
     }
-
 }
+
+
 
 
 
