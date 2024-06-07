@@ -1,7 +1,5 @@
 package simonemanca.vetrineCapstone.services;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,12 +9,14 @@ import simonemanca.vetrineCapstone.entities.Product;
 import simonemanca.vetrineCapstone.entities.ProductDTO;
 import simonemanca.vetrineCapstone.repositories.CategoryRepository;
 import simonemanca.vetrineCapstone.repositories.ProductRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import simonemanca.vetrineCapstone.entities.User;
 @Service
 public class ProductService {
 
@@ -25,6 +25,9 @@ public class ProductService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private NotificaService notificaService;
 
     private final Cloudinary cloudinary;
 
@@ -63,7 +66,7 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public ProductDTO createProduct(String name, String description, double price, String categoryName, String imageUrl) {
+    public ProductDTO createProduct(User user, String name, String description, double price, String categoryName, String imageUrl) {
         Category category = categoryRepository.findByName(categoryName)
                 .orElseThrow(() -> new RuntimeException("Categoria non trovata"));
 
@@ -75,10 +78,14 @@ public class ProductService {
         product.setCategory(category);
 
         product = productRepository.save(product);
+
+        // Creare una notifica
+        notificaService.createProductAddedNotification(user, product);
+
         return convertToDTO(product);
     }
 
-    public ProductDTO saveProduct(ProductDTO productDTO) {
+    public ProductDTO saveProduct(User user, ProductDTO productDTO) {
         Category category = categoryRepository.findByName(productDTO.getCategoryName())
                 .orElseThrow(() -> new RuntimeException("Categoria non trovata"));
 
@@ -90,6 +97,10 @@ public class ProductService {
         product.setCategory(category);
 
         product = productRepository.save(product);
+
+        // Creare una notifica
+        notificaService.createProductAddedNotification(user, product);
+
         return convertToDTO(product);
     }
 
@@ -118,6 +129,7 @@ public class ProductService {
         );
     }
 }
+
 
 
 

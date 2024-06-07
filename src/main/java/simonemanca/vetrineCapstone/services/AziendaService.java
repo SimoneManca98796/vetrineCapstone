@@ -1,3 +1,4 @@
+// AziendaService.java
 package simonemanca.vetrineCapstone.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,13 +7,15 @@ import simonemanca.vetrineCapstone.entities.Azienda;
 import simonemanca.vetrineCapstone.repositories.AziendaRepository;
 
 import java.util.List;
-import java.util.UUID;
-
+import simonemanca.vetrineCapstone.entities.User;
 @Service
 public class AziendaService {
 
     @Autowired
     private AziendaRepository aziendaRepository;
+
+    @Autowired
+    private NotificaService notificaService;
 
     public List<Azienda> getAllAziende() {
         return aziendaRepository.findAll();
@@ -22,14 +25,20 @@ public class AziendaService {
         return aziendaRepository.findById(id).orElse(null);
     }
 
-    public Azienda saveAzienda(Azienda azienda) {
-        return aziendaRepository.save(azienda);
+    public Azienda saveAzienda(User user, Azienda azienda) {
+        Azienda savedAzienda = aziendaRepository.save(azienda);
+
+        // Creare una notifica
+        notificaService.createAziendaAddedNotification(user, savedAzienda);
+
+        return savedAzienda;
     }
 
     public void deleteAzienda(Long id) {
         aziendaRepository.deleteById(id);
     }
 }
+
 
 
 

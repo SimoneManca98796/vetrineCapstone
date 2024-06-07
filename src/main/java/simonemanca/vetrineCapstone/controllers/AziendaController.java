@@ -58,14 +58,10 @@ public class AziendaController {
         // Imposta l'ID dell'utente corrente
         azienda.setUserId(user.getId());
         logger.info("User ID: " + user.getId()); // Log dell'ID utente
-        Azienda createdAzienda = aziendaService.saveAzienda(azienda);
+        Azienda createdAzienda = aziendaService.saveAzienda(user, azienda); // Passa l'oggetto User
         logger.info("Azienda creata con ID utente: " + azienda.getUserId()); // Log dell'azienda creata con ID utente
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAzienda);
     }
-
-
-
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAzienda(@PathVariable Long id, @AuthenticationPrincipal User user) {

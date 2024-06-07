@@ -11,6 +11,8 @@ import simonemanca.vetrineCapstone.services.ProductService;
 import jakarta.validation.Valid;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import simonemanca.vetrineCapstone.entities.User;
 
 @RestController
 @RequestMapping("/api/products")
@@ -43,16 +45,16 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-
     @PostMapping("/categoryName/{categoryName}")
     public ResponseEntity<ProductDTO> createProduct(
             @PathVariable String categoryName,
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("price") double price,
-            @RequestParam("imageUrl") String imageUrl) {
+            @RequestParam("imageUrl") String imageUrl,
+            @AuthenticationPrincipal User user) { // Aggiungi l'oggetto User
 
-        ProductDTO createdProduct = productService.createProduct(name, description, price, categoryName, imageUrl);
+        ProductDTO createdProduct = productService.createProduct(user, name, description, price, categoryName, imageUrl); // Passa l'oggetto User
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
@@ -73,8 +75,8 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {
-        ProductDTO savedProduct = productService.saveProduct(productDTO);
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO, @AuthenticationPrincipal User user) { // Aggiungi l'oggetto User
+        ProductDTO savedProduct = productService.saveProduct(user, productDTO); // Passa l'oggetto User
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 }
