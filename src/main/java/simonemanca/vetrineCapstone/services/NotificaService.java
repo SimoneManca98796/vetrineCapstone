@@ -1,4 +1,3 @@
-
 package simonemanca.vetrineCapstone.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +7,6 @@ import simonemanca.vetrineCapstone.entities.Notifica;
 import simonemanca.vetrineCapstone.entities.Product;
 import simonemanca.vetrineCapstone.entities.User;
 import simonemanca.vetrineCapstone.repositories.NotificaRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,16 +70,6 @@ public class NotificaService {
         }
     }
 
-    public void createProductAddedNotification(User user, Product product) {
-        Notifica notifica = new Notifica();
-        notifica.setMessaggio(String.format("Utente %s ha aggiunto un nuovo prodotto nella categoria %s: %s.",
-                user.getName(), product.getCategory().getName(), product.getName()));
-        notifica.setTipo("product");
-        notifica.setTitolo("Nuovo Prodotto");
-        notifica.setUrl("/products/" + product.getId());
-        createNotifica(notifica);
-    }
-
     public void createAziendaAddedNotification(User user, Azienda azienda) {
         Notifica notifica = new Notifica();
         notifica.setMessaggio(String.format("Utente %s ha aggiunto un nuovo annuncio: %s.",
@@ -89,6 +77,7 @@ public class NotificaService {
         notifica.setTipo("azienda");
         notifica.setTitolo("Nuovo Annuncio");
         notifica.setUrl("/aziende/" + azienda.getId());
+        notifica.setUserId(user.getId());  // Imposta l'ID utente
         createNotifica(notifica);
     }
 
@@ -100,9 +89,16 @@ public class NotificaService {
         notifica.setUrl(url);
         createNotifica(notifica);
     }
+
+    public void createProductAddedNotification(User user, Product product) {
+        Notifica notifica = new Notifica();
+        notifica.setMessaggio(String.format("Utente %s ha aggiunto un nuovo prodotto: %s.",
+                user.getName(), product.getName()));
+        notifica.setTipo("prodotto");
+        notifica.setTitolo("Nuovo Prodotto");
+        notifica.setUrl("/products/" + product.getId());
+        notifica.setUserId(user.getId());  // Imposta l'ID utente
+        createNotifica(notifica);
+    }
 }
-
-
-
-
 

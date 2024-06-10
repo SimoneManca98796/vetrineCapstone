@@ -1,4 +1,3 @@
-// AziendaService.java
 package simonemanca.vetrineCapstone.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +37,3 @@ public class AziendaService {
         aziendaRepository.deleteById(id);
     }
 }
-
-
-
-
-

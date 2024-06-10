@@ -23,14 +23,14 @@ public class NotificaController {
     private NotificaService notificaService;
 
     @Autowired
-   // private NewsService newsService;
+    // private NewsService newsService;
 
     @GetMapping("/notifications")
     public ResponseEntity<List<Notifica>> getAllNotifiche() {
         try {
             List<Notifica> notifiche = notificaService.getAllNotifiche();
-          //  List<Notifica> newsNotifications = newsService.fetchNewsNotifications();
-        //    notifiche.addAll(newsNotifications);
+            //  List<Notifica> newsNotifications = newsService.fetchNewsNotifications();
+            //    notifiche.addAll(newsNotifications);
             return ResponseEntity.ok(notifiche);
         } catch (Exception e) {
             logger.error("Error fetching notifications", e);
@@ -66,7 +66,7 @@ public class NotificaController {
     @PostMapping("/notifications/fetch-news")
     public ResponseEntity<Void> fetchNews() {
         try {
-         //   newsService.fetchAndSaveNews();
+            //   newsService.fetchAndSaveNews();
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             logger.error("Error fetching news notifications", e);
@@ -111,14 +111,6 @@ public class NotificaController {
         }
     }
 }
-
-
-
-
-
-
-
-
 
 
 

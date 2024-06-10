@@ -2,6 +2,7 @@ package simonemanca.vetrineCapstone.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notifiche")
@@ -25,6 +26,9 @@ public class Notifica {
 
     private String fonte;
 
+    @Column(nullable = false)
+    private UUID userId;
+
     public Notifica(String titolo, String messaggio, String tipo, String url, boolean read) {
         this.titolo = titolo;
         this.messaggio = messaggio;
@@ -33,7 +37,4 @@ public class Notifica {
         this.read = read;
     }
 }
-
-
-
 
