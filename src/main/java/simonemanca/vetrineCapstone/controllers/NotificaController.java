@@ -5,13 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import simonemanca.vetrineCapstone.entities.Notifica;
-//import simonemanca.vetrineCapstone.services.NewsService;
 import simonemanca.vetrineCapstone.services.NotificaService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -22,16 +21,14 @@ public class NotificaController {
     @Autowired
     private NotificaService notificaService;
 
-    @Autowired
-    // private NewsService newsService;
-
     @GetMapping("/notifications")
     public ResponseEntity<List<Notifica>> getAllNotifiche() {
         try {
             List<Notifica> notifiche = notificaService.getAllNotifiche();
-            //  List<Notifica> newsNotifications = newsService.fetchNewsNotifications();
-            //    notifiche.addAll(newsNotifications);
-            return ResponseEntity.ok(notifiche);
+            List<Notifica> notificheDaCloudinary = notifiche.stream()
+                    .filter(notifica -> notifica.getAvatarURL() != null && notifica.getAvatarURL().contains("cloudinary"))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(notificheDaCloudinary);
         } catch (Exception e) {
             logger.error("Error fetching notifications", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -66,7 +63,7 @@ public class NotificaController {
     @PostMapping("/notifications/fetch-news")
     public ResponseEntity<Void> fetchNews() {
         try {
-            //   newsService.fetchAndSaveNews();
+            // newsService.fetchAndSaveNews();
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             logger.error("Error fetching news notifications", e);
@@ -104,13 +101,26 @@ public class NotificaController {
     public ResponseEntity<List<Notifica>> getUnreadNotifications() {
         try {
             List<Notifica> unreadNotifications = notificaService.getUnreadNotifiche();
-            return ResponseEntity.ok(unreadNotifications);
+            List<Notifica> unreadNotificationsDaCloudinary = unreadNotifications.stream()
+                    .filter(notifica -> notifica.getAvatarURL() != null && notifica.getAvatarURL().contains("cloudinary"))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(unreadNotificationsDaCloudinary);
         } catch (Exception e) {
             logger.error("Error fetching unread notifications", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

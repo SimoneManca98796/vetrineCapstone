@@ -29,6 +29,9 @@ public class Notifica {
     @Column(nullable = false)
     private UUID userId;
 
+    @Column(name = "user_avatar")
+    private String avatarURL;
+
     public Notifica(String titolo, String messaggio, String tipo, String url, boolean read) {
         this.titolo = titolo;
         this.messaggio = messaggio;
@@ -37,4 +40,9 @@ public class Notifica {
         this.read = read;
     }
 }
+
+
+
+
+
 

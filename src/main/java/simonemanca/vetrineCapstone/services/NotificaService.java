@@ -77,8 +77,13 @@ public class NotificaService {
         notifica.setTipo("azienda");
         notifica.setTitolo("Nuovo Annuncio");
         notifica.setUrl("/aziende/" + azienda.getId());
-        notifica.setUserId(user.getId());  // Imposta l'ID utente
-        createNotifica(notifica);
+        notifica.setUserId(user.getId());
+        String avatarUrl = user.getAvatarURL();
+        System.out.println("User Avatar URL: " + avatarUrl);
+        if (avatarUrl != null && avatarUrl.contains("cloudinary")) {
+            notifica.setAvatarURL(avatarUrl);
+        }
+        notificaRepository.save(notifica);
     }
 
     public void createNewsNotification(String title, String message, String url) {
@@ -97,8 +102,21 @@ public class NotificaService {
         notifica.setTipo("prodotto");
         notifica.setTitolo("Nuovo Prodotto");
         notifica.setUrl("/products/" + product.getId());
-        notifica.setUserId(user.getId());  // Imposta l'ID utente
-        createNotifica(notifica);
+        notifica.setUserId(user.getId());
+        String avatarUrl = user.getAvatarURL();
+        System.out.println("User Avatar URL: " + avatarUrl);
+        if (avatarUrl != null && avatarUrl.contains("cloudinary")) {
+            notifica.setAvatarURL(avatarUrl);
+        }
+        notificaRepository.save(notifica);
     }
 }
+
+
+
+
+
+
+
+
 
