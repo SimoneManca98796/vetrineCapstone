@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -22,15 +23,23 @@ public class NotificaController {
     private NotificaService notificaService;
 
     @GetMapping("/notifications")
-    public ResponseEntity<List<Notifica>> getAllNotifiche() {
+    public ResponseEntity<List<Notifica>> getAllNotifiche(@RequestParam UUID userId) {
         try {
-            List<Notifica> notifiche = notificaService.getAllNotifiche();
-            List<Notifica> notificheDaCloudinary = notifiche.stream()
-                    .filter(notifica -> notifica.getAvatarURL() != null && notifica.getAvatarURL().contains("cloudinary"))
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(notificheDaCloudinary);
+            List<Notifica> notifiche = notificaService.getAllNotifichePerUtente(userId);
+            return ResponseEntity.ok(notifiche);
         } catch (Exception e) {
             logger.error("Error fetching notifications", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/notifications/markAsRead/{userId}")
+    public ResponseEntity<Void> markNotificationsAsRead(@PathVariable UUID userId) {
+        try {
+            notificaService.markNotificationsAsRead(userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error marking notifications as read", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -98,19 +107,25 @@ public class NotificaController {
     }
 
     @GetMapping("/notifications/unread")
-    public ResponseEntity<List<Notifica>> getUnreadNotifications() {
+    public ResponseEntity<List<Notifica>> getUnreadNotifications(@RequestParam UUID userId) {
         try {
-            List<Notifica> unreadNotifications = notificaService.getUnreadNotifiche();
-            List<Notifica> unreadNotificationsDaCloudinary = unreadNotifications.stream()
-                    .filter(notifica -> notifica.getAvatarURL() != null && notifica.getAvatarURL().contains("cloudinary"))
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(unreadNotificationsDaCloudinary);
+            List<Notifica> unreadNotifications = notificaService.getUnreadNotifiche(userId);
+            return ResponseEntity.ok(unreadNotifications);
         } catch (Exception e) {
             logger.error("Error fetching unread notifications", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }
+
+
+
+
+
+
+
+
+
 
 
 

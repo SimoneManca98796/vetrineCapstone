@@ -13,7 +13,15 @@ public interface NotificaRepository extends JpaRepository<Notifica, Integer> {
     List<Notifica> findByTipo(String tipo);
     List<Notifica> findByUserId(UUID userId);
     List<Notifica> findByUserIdAndReadFalse(UUID userId);
+    List<Notifica> findByUserIdNotAndReadFalse(UUID userId);
+    List<Notifica> findByUserIdNotAndReadFalseAndUserIdNot(UUID userId, UUID currentUserId);
 }
+
+
+
+
+
+
 
 
 

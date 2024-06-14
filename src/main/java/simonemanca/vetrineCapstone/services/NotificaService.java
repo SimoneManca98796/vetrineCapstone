@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class NotificaService {
@@ -20,22 +21,37 @@ public class NotificaService {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificaService.class);
 
-    public List<Notifica> getAllNotifiche() {
+    public List<Notifica> getUnreadNotifiche(UUID userId) {
         try {
-            logger.info("Fetching all notifications from the database");
-            return notificaRepository.findAll();
+            logger.info("Fetching unread notifications for user with ID: {}", userId);
+            // Filtra le notifiche non lette che non sono state create dall'utente corrente
+            return notificaRepository.findByUserIdNotAndReadFalse(userId);
         } catch (Exception e) {
-            logger.error("Error fetching notifications from the database", e);
+            logger.error("Error fetching unread notifications for user with ID: {}", userId, e);
             throw e;
         }
     }
 
-    public List<Notifica> getUnreadNotifiche() {
+    public List<Notifica> getAllNotifichePerUtente(UUID userId) {
         try {
-            logger.info("Fetching unread notifications from the database");
-            return notificaRepository.findByReadFalse();
+            logger.info("Fetching notifications not created by user with ID: {}", userId);
+            return notificaRepository.findByUserIdNotAndReadFalse(userId);
         } catch (Exception e) {
-            logger.error("Error fetching unread notifications from the database", e);
+            logger.error("Error fetching notifications for user with ID: {}", userId, e);
+            throw e;
+        }
+    }
+
+    public void markNotificationsAsRead(UUID userId) {
+        try {
+            logger.info("Marking notifications as read for user with ID: {}", userId);
+            List<Notifica> unreadNotifiche = notificaRepository.findByUserIdNotAndReadFalse(userId);
+            for (Notifica notifica : unreadNotifiche) {
+                notifica.setRead(true);
+                notificaRepository.save(notifica);
+            }
+        } catch (Exception e) {
+            logger.error("Error marking notifications as read for user with ID: {}", userId, e);
             throw e;
         }
     }
@@ -89,10 +105,6 @@ public class NotificaService {
         notificaRepository.save(notifica);
     }
 
-
-
-
-
     public void createNewsNotification(String title, String message, String url) {
         Notifica notifica = new Notifica();
         notifica.setTitolo(title);
@@ -141,6 +153,14 @@ public class NotificaService {
         notificaRepository.save(notifica);
     }
 }
+
+
+
+
+
+
+
+
 
 
 
