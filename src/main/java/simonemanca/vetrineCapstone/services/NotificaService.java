@@ -72,12 +72,15 @@ public class NotificaService {
 
     public void createAziendaAddedNotification(User user, Azienda azienda) {
         Notifica notifica = new Notifica();
-        notifica.setMessaggio(String.format("Utente %s ha aggiunto un nuovo annuncio: %s.",
-                user.getName(), azienda.getName()));
+        String messaggio = String.format("%s ha aggiunto un nuovo annuncio: %s",
+                user.getName() + " " + user.getSurname(), azienda.getName());
+        notifica.setMessaggio(messaggio);
         notifica.setTipo("azienda");
         notifica.setTitolo("Nuovo Annuncio");
-        notifica.setUrl("/aziende/" + azienda.getId());
+        notifica.setUrl("/Aziende");
         notifica.setUserId(user.getId());
+        notifica.setFonte(user.getName() + " " + user.getSurname());
+        notifica.setTimestamp(System.currentTimeMillis()); // Aggiungi il timestamp
         String avatarUrl = user.getAvatarURL();
         System.out.println("User Avatar URL: " + avatarUrl);
         if (avatarUrl != null && avatarUrl.contains("cloudinary")) {
@@ -85,6 +88,10 @@ public class NotificaService {
         }
         notificaRepository.save(notifica);
     }
+
+
+
+
 
     public void createNewsNotification(String title, String message, String url) {
         Notifica notifica = new Notifica();
@@ -97,12 +104,35 @@ public class NotificaService {
 
     public void createProductAddedNotification(User user, Product product) {
         Notifica notifica = new Notifica();
-        notifica.setMessaggio(String.format("Utente %s ha aggiunto un nuovo prodotto: %s.",
-                user.getName(), product.getName()));
+        String categoria = product.getCategoria();
+        String url = "";
+
+        switch (categoria.toLowerCase()) {
+            case "piantine":
+                url = "/Piantine";
+                break;
+            case "artigianali":
+                url = "/Artigianali";
+                break;
+            case "animali":
+                url = "/Animali";
+                break;
+            case "attrezzature":
+                url = "/Attrezzature";
+                break;
+            default:
+                url = "/products";
+        }
+
+        String messaggio = String.format("%s ha aggiunto un nuovo prodotto, categoria: %s.",
+                user.getName() + " " + user.getSurname(), categoria);
+        notifica.setMessaggio(messaggio);
         notifica.setTipo("prodotto");
         notifica.setTitolo("Nuovo Prodotto");
-        notifica.setUrl("/products/" + product.getId());
+        notifica.setUrl(url);
         notifica.setUserId(user.getId());
+        notifica.setFonte(user.getName() + " " + user.getSurname());
+        notifica.setTimestamp(System.currentTimeMillis()); // Aggiungi il timestamp
         String avatarUrl = user.getAvatarURL();
         System.out.println("User Avatar URL: " + avatarUrl);
         if (avatarUrl != null && avatarUrl.contains("cloudinary")) {

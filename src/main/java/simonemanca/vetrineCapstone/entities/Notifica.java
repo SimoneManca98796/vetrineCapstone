@@ -32,14 +32,19 @@ public class Notifica {
     @Column(name = "user_avatar")
     private String avatarURL;
 
+    @Column(nullable = false)
+    private long timestamp;
+
     public Notifica(String titolo, String messaggio, String tipo, String url, boolean read) {
         this.titolo = titolo;
         this.messaggio = messaggio;
         this.tipo = tipo;
         this.url = url;
         this.read = read;
+        this.timestamp = System.currentTimeMillis();
     }
 }
+
 
 
 
