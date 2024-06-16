@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity  // Abilita la sicurezza a livello di metodo
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -30,27 +30,30 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 .httpBasic(http -> http.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Utilizza la configurazione CORS definita sopra
-
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .headers(headers -> headers
                         .contentSecurityPolicy(csp -> csp
                                 .policyDirectives("default-src 'self'; script-src 'self' https://js.stripe.com; frame-src 'self' https://js.stripe.com; connect-src 'self' https://api.stripe.com https://errors.stripe.com https://r.stripe.com https://ppm.stripe.com; img-src 'self' data: https://*.stripe.com; style-src 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com;")
                         )
                 )
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/**").permitAll());
+                        .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+                        .anyRequest().authenticated());
 
         return httpSecurity.build();
     }
 
-
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173", "https://vetrine-agricole-6d661b03a449.herokuapp.com"));
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "https://vetrine-agricole-6d661b03a449.herokuapp.com"
+        ));
         config.setAllowedMethods(Arrays.asList("*"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
@@ -60,8 +63,10 @@ public class SecurityConfig {
 
         return source;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
+
