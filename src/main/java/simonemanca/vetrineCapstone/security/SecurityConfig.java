@@ -34,6 +34,7 @@ public class SecurityConfig {
                         )
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/test").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/static/**").permitAll()
