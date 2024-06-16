@@ -52,7 +52,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "https://vetrine-agricole-6d661b03a449.herokuapp.com"
+                "https://vetrine-agricole-6d661b03a449.herokuapp.com",
+                "https://vetrine-capstone.vercel.app"
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
