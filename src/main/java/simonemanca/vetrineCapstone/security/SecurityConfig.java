@@ -39,7 +39,8 @@ public class SecurityConfig {
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/static/**").permitAll()
                         .requestMatchers("/webjars/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll() // Aggiungi questa linea
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/prezzi/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .anyRequest().authenticated());
 
