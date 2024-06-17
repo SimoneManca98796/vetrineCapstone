@@ -40,8 +40,17 @@ public class SecurityConfig {
                         .requestMatchers("/static/**").permitAll()
                         .requestMatchers("/webjars/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/prezzi/**").permitAll()
-                        .requestMatchers("/api/aziende/**").permitAll()
+                        .requestMatchers("/api/prezzi/**").permitAll() // prezzi latte
+                        .requestMatchers("/api/aziende/**").permitAll() // annunci
+                        .requestMatchers("/api/prezziOvini/**").permitAll()
+                        .requestMatchers("/api/prezziSuini/**").permitAll()
+                        .requestMatchers("/api/prezziBovini/**").permitAll()
+                        .requestMatchers("/api/products/**").permitAll() // prodotti
+                        .requestMatchers("/api/categories/**").permitAll() // categorie dei prodotti
+                        .requestMatchers("/api/payment/**").permitAll() // pagamenti
+                        .requestMatchers("/api/**").permitAll() // notifiche
+                        .requestMatchers("/api/verify-captcha/**").permitAll() // captcha
+                        .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .anyRequest().authenticated());
 
