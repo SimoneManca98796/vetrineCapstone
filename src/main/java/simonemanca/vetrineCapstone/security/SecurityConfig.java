@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .headers(headers -> headers
                         .contentSecurityPolicy(csp -> csp
-                                .policyDirectives("default-src 'self'; script-src 'self' https://js.stripe.com; frame-src 'self' https://js.stripe.com; connect-src 'self' https://api.stripe.com https://errors.stripe.com https://r.stripe.com https://ppm.stripe.com https://merchant-ui-api.stripe.com https://vetrine-agricole-6d661b03a449.herokuapp.com; img-src 'self' data: https://*.stripe.com; style-src 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com;")
+                                .policyDirectives("default-src 'self'; script-src 'self' https://js.stripe.com https://js.hcaptcha.com; frame-src 'self' https://js.stripe.com https://hcaptcha.com; connect-src 'self' https://api.stripe.com https://errors.stripe.com https://r.stripe.com https://ppm.stripe.com https://merchant-ui-api.stripe.com https://vetrine-agricole-6d661b03a449.herokuapp.com https://hcaptcha.com https://sentry.hcaptcha.com https://api.hcaptcha.com; img-src 'self' data: https://*.stripe.com; style-src 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com;")
                         )
                 )
                 .authorizeHttpRequests(auth -> auth
