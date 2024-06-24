@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import simonemanca.vetrineCapstone.entities.User;
 import simonemanca.vetrineCapstone.exceptions.BadRequestException;
+import simonemanca.vetrineCapstone.exceptions.NotFoundException;
 import simonemanca.vetrineCapstone.exceptions.UnauthorizedException;
 import simonemanca.vetrineCapstone.payloads.NewUserDTO;
 import simonemanca.vetrineCapstone.services.AuthService;
@@ -18,6 +19,7 @@ import simonemanca.vetrineCapstone.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,7 +93,11 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Internal Server Error: " + ex.getMessage()));
         }
     }
+
+
+
 }
+
 
 
 

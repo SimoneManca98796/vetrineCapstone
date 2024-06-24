@@ -18,6 +18,9 @@ public class EmailService {
     @Value("${sendgrid.fromemail}")
     private String fromEmail;
 
+    @Value("${frontend.reset-password-url}")
+    private String resetPasswordUrl;
+
     public void sendRegistrationEmail(User user) {
         String url = "https://api.sendgrid.com/v3/mail/send";
 
@@ -45,4 +48,37 @@ public class EmailService {
             e.printStackTrace();
         }
     }
+
+    public void sendPasswordResetEmail(User user) {
+        String url = "https://api.sendgrid.com/v3/mail/send";
+
+        String resetLink = resetPasswordUrl + "?token=" + user.getResetToken();
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + apiKey);
+
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("personalizations", Collections.singletonList(new JSONObject()
+                .put("to", Collections.singletonList(new JSONObject().put("email", user.getEmail())))));
+        requestBody.put("from", new JSONObject().put("email", fromEmail));
+        requestBody.put("subject", "Recupero Password VetrineCapstone");
+        requestBody.put("content", Collections.singletonList(new JSONObject()
+                .put("type", "text/plain")
+                .put("value", "Ciao " + user.getName() + ",\n\nPer favore clicca sul link seguente per reimpostare la tua password: " + resetLink)));
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody.toString(), headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+            System.out.println("Response from SendGrid: " + response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
+
+
+

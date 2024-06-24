@@ -11,6 +11,8 @@ import simonemanca.vetrineCapstone.exceptions.BadRequestException;
 import simonemanca.vetrineCapstone.exceptions.NotFoundException;
 import simonemanca.vetrineCapstone.repositories.UserRepository;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,9 +30,13 @@ public class UserService {
     }
 
     public User save(User user) {
-        userRepository.findByEmail(user.getEmail()).ifPresent(existingUser -> {
-            throw new BadRequestException("L'email " + user.getEmail() + " è già in uso!");
-        });
+        Optional<User> existingUserOpt = userRepository.findByEmail(user.getEmail());
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+            if (!existingUser.getId().equals(user.getId())) {
+                throw new BadRequestException("L'email " + user.getEmail() + " è già in uso!");
+            }
+        }
         return userRepository.save(user);
     }
 
@@ -49,4 +55,18 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("Utente con email " + email + " non trovato!"));
     }
+
+    public User findByResetToken(String resetToken) {
+        return userRepository.findByResetToken(resetToken).orElseThrow(() -> new NotFoundException("Token di reset non valido!"));
+    }
+
+    public String generatePasswordResetToken(User user) {
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        user.setTokenExpiration(LocalDateTime.now().plusHours(1)); // Il token scade dopo 1 ora
+        userRepository.save(user);
+        return token;
+    }
 }
+
+

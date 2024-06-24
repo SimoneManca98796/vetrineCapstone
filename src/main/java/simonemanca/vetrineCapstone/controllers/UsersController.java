@@ -12,10 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import simonemanca.vetrineCapstone.entities.User;
+import simonemanca.vetrineCapstone.exceptions.NotFoundException;
 import simonemanca.vetrineCapstone.services.CloudinaryService;
+import simonemanca.vetrineCapstone.services.EmailService;
 import simonemanca.vetrineCapstone.services.UserService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,6 +43,9 @@ public class UsersController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -139,7 +145,57 @@ public class UsersController {
         return ResponseEntity.ok().body("Password aggiornata con successo.");
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> emailMap) {
+        String email = emailMap.get("email");
+        try {
+            User user = userService.findByEmail(email);
+            String token = userService.generatePasswordResetToken(user); // Genera il token
+            emailService.sendPasswordResetEmail(user); // Invia l'email di reset
+            return ResponseEntity.ok().body("Le istruzioni per il recupero della password sono state inviate alla tua email.");
+        } catch (NotFoundException ex) {
+            logger.error("Recupero password fallito: " + ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Email non trovata: " + ex.getMessage()));
+        } catch (Exception ex) {
+            logger.error("Errore interno durante il recupero della password", ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Errore interno: " + ex.getMessage()));
+        }
+    }
+
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> passwordResetMap) {
+        String token = passwordResetMap.get("token");
+        String newPassword = passwordResetMap.get("newPassword");
+
+        // Stampa di debug
+        System.out.println("Token ricevuto: " + token);
+        System.out.println("Nuova password ricevuta: " + newPassword);
+
+        try {
+            User user = userService.findByResetToken(token);
+
+            if (user == null || user.getTokenExpiration().isBefore(LocalDateTime.now())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token non valido o scaduto.");
+            }
+
+            // Stampa di debug
+            System.out.println("Utente trovato: " + user.getEmail());
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setResetToken(null);
+            user.setTokenExpiration(null);
+            userService.save(user);
+
+            return ResponseEntity.ok("Password aggiornata con successo.");
+        } catch (Exception ex) {
+            // Stampa di debug per l'eccezione
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore durante il reset della password.");
+        }
+    }
 }
+
 
 
 
