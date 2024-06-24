@@ -42,19 +42,20 @@ public class NotificaService {
         }
     }
 
-    public void markNotificationsAsRead(UUID userId) {
+    public void markNotificationAsRead(UUID userId, int notificaId) {
         try {
-            logger.info("Marking notifications as read for user with ID: {}", userId);
-            List<Notifica> unreadNotifiche = notificaRepository.findByUserIdNotAndReadFalse(userId);
-            for (Notifica notifica : unreadNotifiche) {
+            logger.info("Marking notification with ID: {} as read for user with ID: {}", notificaId, userId);
+            Notifica notifica = notificaRepository.findById(notificaId).orElse(null);
+            if (notifica != null && notifica.getUserId().equals(userId)) {
                 notifica.setRead(true);
                 notificaRepository.save(notifica);
             }
         } catch (Exception e) {
-            logger.error("Error marking notifications as read for user with ID: {}", userId, e);
+            logger.error("Error marking notification as read", e);
             throw e;
         }
     }
+
 
     public Notifica createNotifica(Notifica notifica) {
         try {
@@ -153,6 +154,7 @@ public class NotificaService {
         notificaRepository.save(notifica);
     }
 }
+
 
 
 

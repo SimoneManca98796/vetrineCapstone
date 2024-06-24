@@ -33,16 +33,19 @@ public class NotificaController {
         }
     }
 
-    @PostMapping("/notifications/markAsRead/{userId}")
-    public ResponseEntity<Void> markNotificationsAsRead(@PathVariable UUID userId) {
+    @PostMapping("/notifications/markAsRead/{userId}/{notificaId}")
+    public ResponseEntity<Void> markNotificationAsRead(
+            @PathVariable UUID userId,
+            @PathVariable int notificaId) {
         try {
-            notificaService.markNotificationsAsRead(userId);
+            notificaService.markNotificationAsRead(userId, notificaId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            logger.error("Error marking notifications as read", e);
+            logger.error("Error marking notification as read", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     @PostMapping("/notifications")
     public ResponseEntity<Notifica> createNotifica(@RequestBody Notifica notifica) {
