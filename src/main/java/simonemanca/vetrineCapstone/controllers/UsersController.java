@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import simonemanca.vetrineCapstone.entities.User;
@@ -36,6 +37,9 @@ public class UsersController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -122,6 +126,17 @@ public class UsersController {
                 .contentType(MediaType.parseMediaType(mimeType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
                 .body(file);
+    }
+
+    @PostMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@AuthenticationPrincipal User currentUser, @RequestBody Map<String, String> passwordMap) {
+        String newPassword = passwordMap.get("password");
+        if (newPassword == null || newPassword.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password non può essere vuota.");
+        }
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
+        userService.update(currentUser);
+        return ResponseEntity.ok().body("Password aggiornata con successo.");
     }
 
 }
