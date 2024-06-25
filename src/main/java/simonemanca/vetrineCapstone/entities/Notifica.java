@@ -1,7 +1,13 @@
 package simonemanca.vetrineCapstone.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -20,10 +26,6 @@ public class Notifica {
     private String messaggio;
     private String tipo;
     private String url;
-
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean read;
-
     private String fonte;
 
     @Column(nullable = false)
@@ -35,15 +37,32 @@ public class Notifica {
     @Column(nullable = false)
     private long timestamp;
 
-    public Notifica(String titolo, String messaggio, String tipo, String url, boolean read) {
+    @ElementCollection
+    @CollectionTable(name = "notifica_readers", joinColumns = @JoinColumn(name = "notifica_id"))
+    @Column(name = "reader_id")
+    private Set<UUID> readers = new HashSet<>();
+
+    public void addReader(UUID userId) {
+        this.readers.add(userId);
+    }
+
+    public boolean isReadBy(UUID userId) {
+        return this.readers.contains(userId);
+    }
+
+    public Notifica(String titolo, String messaggio, String tipo, String url, String fonte, UUID userId, String avatarURL) {
         this.titolo = titolo;
         this.messaggio = messaggio;
         this.tipo = tipo;
         this.url = url;
-        this.read = read;
+        this.fonte = fonte;
+        this.userId = userId;
+        this.avatarURL = avatarURL;
         this.timestamp = System.currentTimeMillis();
     }
 }
+
+
 
 
 

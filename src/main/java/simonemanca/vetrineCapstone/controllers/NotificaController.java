@@ -47,6 +47,8 @@ public class NotificaController {
     }
 
 
+
+
     @PostMapping("/notifications")
     public ResponseEntity<Notifica> createNotifica(@RequestBody Notifica notifica) {
         try {
@@ -120,6 +122,8 @@ public class NotificaController {
         }
     }
 }
+
+
 
 
 

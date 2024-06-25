@@ -24,8 +24,7 @@ public class NotificaService {
     public List<Notifica> getUnreadNotifiche(UUID userId) {
         try {
             logger.info("Fetching unread notifications for user with ID: {}", userId);
-            // Filtra le notifiche non lette che non sono state create dall'utente corrente
-            return notificaRepository.findByUserIdNotAndReadFalse(userId);
+            return notificaRepository.findUnreadByUserId(userId);
         } catch (Exception e) {
             logger.error("Error fetching unread notifications for user with ID: {}", userId, e);
             throw e;
@@ -35,7 +34,7 @@ public class NotificaService {
     public List<Notifica> getAllNotifichePerUtente(UUID userId) {
         try {
             logger.info("Fetching notifications not created by user with ID: {}", userId);
-            return notificaRepository.findByUserIdNotAndReadFalse(userId);
+            return notificaRepository.findUnreadByUserId(userId);
         } catch (Exception e) {
             logger.error("Error fetching notifications for user with ID: {}", userId, e);
             throw e;
@@ -46,16 +45,22 @@ public class NotificaService {
         try {
             logger.info("Marking notification with ID: {} as read for user with ID: {}", notificaId, userId);
             Notifica notifica = notificaRepository.findById(notificaId).orElse(null);
-            if (notifica != null && notifica.getUserId().equals(userId)) {
-                notifica.setRead(true);
-                notificaRepository.save(notifica);
+            if (notifica != null) {
+                if (!notifica.isReadBy(userId)) {
+                    notifica.addReader(userId);
+                    notificaRepository.save(notifica);
+                    logger.info("Notification ID: {} marked as read and saved to the database for user: {}", notificaId, userId);
+                } else {
+                    logger.info("Notification ID: {} was already marked as read by user: {}", notificaId, userId);
+                }
+            } else {
+                logger.warn("Notification with ID: {} not found", notificaId);
             }
         } catch (Exception e) {
             logger.error("Error marking notification as read", e);
             throw e;
         }
     }
-
 
     public Notifica createNotifica(Notifica notifica) {
         try {
@@ -97,11 +102,12 @@ public class NotificaService {
         notifica.setUrl("/Aziende");
         notifica.setUserId(user.getId());
         notifica.setFonte(user.getName() + " " + user.getSurname());
-        notifica.setTimestamp(System.currentTimeMillis()); // Aggiungi il timestamp
+        notifica.setTimestamp(System.currentTimeMillis());
         String avatarUrl = user.getAvatarURL();
-        System.out.println("User Avatar URL: " + avatarUrl);
         if (avatarUrl != null && avatarUrl.contains("cloudinary")) {
             notifica.setAvatarURL(avatarUrl);
+        } else {
+            notifica.setAvatarURL("/userPredefinito.png"); // URL di default per l'avatar
         }
         notificaRepository.save(notifica);
     }
@@ -150,10 +156,13 @@ public class NotificaService {
         System.out.println("User Avatar URL: " + avatarUrl);
         if (avatarUrl != null && avatarUrl.contains("cloudinary")) {
             notifica.setAvatarURL(avatarUrl);
+        } else {
+            notifica.setAvatarURL("/userPredefinito.png"); // URL di default per l'avatar
         }
         notificaRepository.save(notifica);
     }
 }
+
 
 
 
