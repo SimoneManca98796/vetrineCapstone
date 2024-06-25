@@ -161,6 +161,21 @@ public class NotificaService {
         }
         notificaRepository.save(notifica);
     }
+
+    public void markAllNotificationsAsRead(UUID userId) {
+        try {
+            List<Notifica> unreadNotifiche = notificaRepository.findUnreadByUserId(userId);
+            for (Notifica notifica : unreadNotifiche) {
+                notifica.addReader(userId);
+            }
+            notificaRepository.saveAll(unreadNotifiche);
+            logger.info("All notifications marked as read for user with ID: {}", userId);
+        } catch (Exception e) {
+            logger.error("Error marking all notifications as read for user with ID: {}", userId, e);
+            throw e;
+        }
+    }
+
 }
 
 

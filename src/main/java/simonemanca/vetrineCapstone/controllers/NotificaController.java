@@ -121,6 +121,19 @@ public class NotificaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @PostMapping("/notifications/markAllAsRead/{userId}")
+    public ResponseEntity<Void> markAllNotificationsAsRead(@PathVariable UUID userId) {
+        try {
+            notificaService.markAllNotificationsAsRead(userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error marking all notifications as read", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
 }
 
 
