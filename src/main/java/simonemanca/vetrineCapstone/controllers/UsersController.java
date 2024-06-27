@@ -194,6 +194,25 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore durante il reset della password.");
         }
     }
+
+    @PostMapping("/upload-document")
+    public ResponseEntity<?> uploadDocument(@AuthenticationPrincipal User currentUser, @RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
+            }
+
+            Map uploadResult = cloudinaryService.uploadFile(file);
+
+            String documentUrl = uploadResult.get("url").toString();
+            currentUser.setDocumentURL(documentUrl);
+            userService.update(currentUser);
+
+            return ResponseEntity.ok().body(Map.of("fileName", file.getOriginalFilename(), "url", documentUrl, "type", file.getContentType(), "size", file.getSize()));
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not upload the file: " + ex.getMessage());
+        }
+    }
 }
 
 
