@@ -9,10 +9,15 @@ public class ProductDTO {
     private Long categoryId;
     private String categoryName;
 
+    private String vendorName;
+    private String vendorSurname;
+
+
+    ;
     // Costruttori
     public ProductDTO() {}
 
-    public ProductDTO(Long id, String name, String description, double price, String imageUrl, Long categoryId, String categoryName) {
+    public ProductDTO(Long id, String name, String description, double price, String imageUrl, Long categoryId, String categoryName, String vendorName, String vendorSurname) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -20,9 +25,29 @@ public class ProductDTO {
         this.imageUrl = imageUrl;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
+        this.vendorName = vendorName;
+        this.vendorSurname = vendorSurname;
+
     }
 
     // Getter e Setter
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorSurname() {
+        return vendorSurname;
+    }
+
+    public void setVendorSurname(String vendorSurname) {
+        this.vendorSurname = vendorSurname;
+    }
+
     public Long getId() {
         return id;
     }

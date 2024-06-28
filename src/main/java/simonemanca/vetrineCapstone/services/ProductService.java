@@ -76,6 +76,7 @@ public class ProductService {
         product.setPrice(price);
         product.setImageUrl(imageUrl);
         product.setCategory(category);
+        product.setUser(user);
 
         product = productRepository.save(product);
 
@@ -95,6 +96,7 @@ public class ProductService {
         product.setPrice(productDTO.getPrice());
         product.setImageUrl(productDTO.getImageUrl());
         product.setCategory(category);
+        product.setUser(user); // Imposta il venditore
 
         product = productRepository.save(product);
 
@@ -118,17 +120,21 @@ public class ProductService {
     }
 
     private ProductDTO convertToDTO(Product product) {
-        return new ProductDTO(
+        ProductDTO productDTO = new ProductDTO(
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
                 product.getImageUrl(),
                 product.getCategory().getId(),
-                product.getCategory().getName()
+                product.getCategory().getName(),
+                product.getUser() != null ? product.getUser().getName() : null,
+                product.getUser() != null ? product.getUser().getSurname() : null
         );
+        return productDTO;
     }
 }
+
 
 
 

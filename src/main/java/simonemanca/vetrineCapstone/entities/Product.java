@@ -24,6 +24,10 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public String getCategoria() {
         return category != null ? category.getName() : "Unknown";
     }

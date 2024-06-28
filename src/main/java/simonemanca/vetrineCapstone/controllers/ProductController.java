@@ -52,9 +52,13 @@ public class ProductController {
             @RequestParam("description") String description,
             @RequestParam("price") double price,
             @RequestParam("imageUrl") String imageUrl,
-            @AuthenticationPrincipal User user) { // Aggiungi l'oggetto User
+            @AuthenticationPrincipal User user) {
 
-        ProductDTO createdProduct = productService.createProduct(user, name, description, price, categoryName, imageUrl); // Passa l'oggetto User
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        ProductDTO createdProduct = productService.createProduct(user, name, description, price, categoryName, imageUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
@@ -75,11 +79,17 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO, @AuthenticationPrincipal User user) { // Aggiungi l'oggetto User
-        ProductDTO savedProduct = productService.saveProduct(user, productDTO); // Passa l'oggetto User
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO, @AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        ProductDTO savedProduct = productService.saveProduct(user, productDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 }
+
+
 
 
 
